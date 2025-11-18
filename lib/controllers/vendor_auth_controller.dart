@@ -54,6 +54,7 @@ class VendorAuthController {
     required String email,
     required String password,
     required context,
+    required WidgetRef ref,
   }) async {
     try {
       final response = await http.post(
@@ -63,6 +64,7 @@ class VendorAuthController {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
+      print(response.body);
       manageHttpResponse(
         res: response,
         context: context,
@@ -71,7 +73,8 @@ class VendorAuthController {
           String token = jsonDecode(response.body)['token'];
           await preferences.setString('auth-token', token);
           final vendorJson = jsonEncode(jsonDecode(response.body)['user']);
-          providerContainer.read(vendorProvider.notifier).setVendor(vendorJson);
+          //providerContainer.read(vendorProvider.notifier).setVendor(vendorJson);
+          ref.read(vendorProvider.notifier).setVendor(vendorJson);
           await preferences.setString('vendor', vendorJson);
           showSnackBar(context, 'Vendor signed in successfully');
           Navigator.pushAndRemoveUntil(

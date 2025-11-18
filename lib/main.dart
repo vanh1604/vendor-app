@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vendor_app/provider/vendor_provider.dart';
-import 'package:vendor_app/views/screens/authentication/register_screen.dart';
+import 'package:vendor_app/views/screens/authentication/login_screen.dart';
 import 'package:vendor_app/views/screens/main_vendor_screen.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends ConsumerWidget {
   Future<void> _checkTokenAndSetUser(WidgetRef ref) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? token = preferences.getString('auth-token');
-    String? vendorJson = preferences.getString('user');
+    String? vendorJson = preferences.getString('vendor');
     if (token != null && vendorJson != null) {
       ref.read(vendorProvider.notifier).setVendor(vendorJson);
     } else {
@@ -37,7 +37,7 @@ class MyApp extends ConsumerWidget {
             return Center(child: CircularProgressIndicator());
           }
           final vendor = ref.watch(vendorProvider);
-          return vendor == null ? RegisterScreen() : MainVendorScreen();
+          return vendor == null ? LoginScreen() : MainVendorScreen();
         },
       ),
     );
