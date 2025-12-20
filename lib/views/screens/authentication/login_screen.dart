@@ -21,12 +21,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() {
       isLoading = true;
     });
+
     await _vendorAuthController
         .signIn(context: context, email: email, password: password, ref: ref)
         .whenComplete(() {
-          setState(() {
-            isLoading = false;
-          });
+          // FIX: Check if the widget is still on screen before calling setState
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
         });
   }
 

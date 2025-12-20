@@ -64,15 +64,24 @@ class VendorAuthController {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-      print(response.body);
+      print("=== DEBUG Login Response ===");
+      print("Status code: ${response.statusCode}");
+      print("Response body: ${response.body}");
       manageHttpResponse(
         res: response,
         context: context,
         onSuccess: () async {
           SharedPreferences preferences = await SharedPreferences.getInstance();
-          String token = jsonDecode(response.body)['token'];
+          final responseData = jsonDecode(response.body);
+          print("Parsed response data: $responseData");
+          String token = responseData['token'];
+          print("Token: $token");
+          final user = responseData['user'];
+          print("User data from backend: $user");
+          print("User ID field: ${user['_id']}");
           await preferences.setString('auth-token', token);
-          final vendorJson = jsonEncode(jsonDecode(response.body)['user']);
+          final vendorJson = jsonEncode(user);
+          print("VendorJson to save: $vendorJson");
           //providerContainer.read(vendorProvider.notifier).setVendor(vendorJson);
           ref.read(vendorProvider.notifier).setVendor(vendorJson);
           await preferences.setString('vendor', vendorJson);

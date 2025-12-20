@@ -19,7 +19,7 @@ class _MainVendorScreenState extends State<MainVendorScreen> {
     EarningsScreen(),
     UploadScreen(),
     EditScreen(),
-    OrdersScreen(),
+    OrderScreen(),
     ProfileScreen(),
   ];
   @override

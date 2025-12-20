@@ -55,4 +55,9 @@ class Vendor {
 
   factory Vendor.fromJson(String source) =>
       Vendor.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() {
+    return 'Vendor(id: $id, fullName: $fullName, email: $email, state: $state, city: $city, locality: $locality, role: $role)';
+  }
 }
