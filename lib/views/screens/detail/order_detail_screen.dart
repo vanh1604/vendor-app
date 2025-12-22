@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:vendor_app/controllers/order_controller.dart';
 import 'package:vendor_app/models/order.dart';
 
 class OrderDetailScreen extends StatefulWidget {
@@ -11,6 +12,7 @@ class OrderDetailScreen extends StatefulWidget {
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  final OrderController orderController = OrderController();
   @override
   Widget build(BuildContext context) {
     final order = widget.order;
@@ -198,7 +200,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Container(
               width: 336,
-              height: order.delivered == true ? 170 : 120,
+              height: order.delivered == false ? 170 : 120,
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Color(0xFFEFF0F2)),
@@ -243,15 +245,40 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ],
                     ),
                   ),
-                  order.delivered == true
-                      ? TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Leave a Review',
-                            style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.bold,
+                  order.delivered == false
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () async {
+                                await orderController.updateDeliveryStatus(
+                                  orderId: order.id,
+                                  context: context,
+                                );
+                              },
+                              child: Text(
+                                'Mark as Delivered ?',
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
+                            TextButton(
+                              onPressed: () async {
+                                await orderController.updateProccessStatus(
+                                  orderId: order.id,
+                                  context: context,
+                                );
+                              },
+                              child: Text(
+                                'Cancel',
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                          ],
                         )
                       : SizedBox(),
                 ],

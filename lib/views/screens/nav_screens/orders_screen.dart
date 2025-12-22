@@ -17,20 +17,14 @@ class OrderScreen extends ConsumerStatefulWidget {
 class _OrderScreenState extends ConsumerState<OrderScreen> {
   Future<void> _fetchOrderData() async {
     final user = ref.read(vendorProvider);
-    print("=== DEBUG _fetchOrderData ===");
-    print("User object: $user");
     if (user != null) {
-      print("User ID: ${user.id}");
-      print("User email: ${user.email}");
       if (user.id.isEmpty) {
-        print("ERROR: VendorId is empty!");
         return;
       }
       final OrderController orderController = OrderController();
       try {
-        print("Calling API with vendorId: ${user.id}");
         final res = await orderController.loadOrders(vendorId: user.id);
-        print("API response: ${res.length} orders");
+
         ref.read(orderProvider.notifier).setOrders(res);
       } catch (e) {
         print("Error fetching orders: $e");
@@ -317,20 +311,22 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                         ),
                                       ),
                                     ),
-                                    Positioned(
-                                      left: 298,
-                                      top: 115,
-                                      child: InkWell(
-                                        onTap: () {
-                                          deleteOrder(orderId: order.id);
-                                        },
-                                        child: Image.asset(
-                                          'assets/icons/delete.png',
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                      ),
-                                    ),
+                                    order.delivered == true
+                                        ? Positioned(
+                                            left: 298,
+                                            top: 115,
+                                            child: InkWell(
+                                              onTap: () {
+                                                deleteOrder(orderId: order.id);
+                                              },
+                                              child: Image.asset(
+                                                'assets/icons/delete.png',
+                                                width: 20,
+                                                height: 20,
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox(),
                                   ],
                                 ),
                               ),
