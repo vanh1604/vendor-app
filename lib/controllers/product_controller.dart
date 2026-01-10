@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vendor_app/global_variables.dart';
 import 'package:vendor_app/models/product.dart';
 import 'package:vendor_app/services/manage_http_response.dart';
@@ -19,6 +20,8 @@ class ProductController {
     required String fullName,
     required BuildContext context,
   }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth-token');
     if (pickedImages.isNotEmpty) {
       final cloudinary = CloudinaryPublic("duzytwoln", "dmwyjltu");
       List<String> images = [];
@@ -47,6 +50,7 @@ class ProductController {
           body: product.toJson(),
           headers: <String, String>{
             "Content-Type": "application/json; charset=UTF-8",
+            "Authorization": "Bearer $token",
           },
         );
         manageHttpResponse(

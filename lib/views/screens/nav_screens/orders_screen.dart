@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vendor_app/controllers/order_controller.dart';
-import 'package:vendor_app/provider/order_provider';
+import 'package:vendor_app/provider/order_provider.dart';
+
 import 'package:vendor_app/provider/vendor_provider.dart';
 import 'package:vendor_app/views/screens/detail/order_detail_screen.dart';
 

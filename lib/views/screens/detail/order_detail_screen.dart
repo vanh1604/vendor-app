@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vendor_app/controllers/order_controller.dart';
 import 'package:vendor_app/models/order.dart';
+import 'package:vendor_app/provider/order_provider.dart';
 
-class OrderDetailScreen extends StatefulWidget {
+class OrderDetailScreen extends ConsumerStatefulWidget {
   const OrderDetailScreen({super.key, required this.order});
   final Order order;
 
   @override
-  _OrderDetailScreenState createState() => _OrderDetailScreenState();
+  ConsumerState<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
 
-class _OrderDetailScreenState extends State<OrderDetailScreen> {
+class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   final OrderController orderController = OrderController();
   @override
   Widget build(BuildContext context) {
     final order = widget.order;
+    final orders = ref.watch(orderProvider);
+    final updatedOrder = orders.firstWhere(
+      (element) => element.id == order.id,
+      orElse: () => order,
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -145,9 +152,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               height: 25,
                               clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
-                                color: order.delivered == true
+                                color: updatedOrder.delivered == true
                                     ? Color(0xFF3C55EF)
-                                    : order.processing == true
+                                    : updatedOrder.processing == true
                                     ? Colors.purple
                                     : Colors.red,
                                 borderRadius: BorderRadius.circular(4),
@@ -159,9 +166,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                     left: 9,
                                     top: 2,
                                     child: Text(
-                                      order.delivered == true
+                                      updatedOrder.delivered == true
                                           ? "Delivered"
-                                          : order.processing == true
+                                          : updatedOrder.processing == true
                                           ? "Processing"
                                           : "Cancelled",
                                       style: GoogleFonts.montserrat(
@@ -245,16 +252,25 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ],
                     ),
                   ),
-                  order.delivered == false
+                  updatedOrder.delivered == false
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextButton(
                               onPressed: () async {
-                                await orderController.updateDeliveryStatus(
-                                  orderId: order.id,
-                                  context: context,
-                                );
+                                await orderController
+                                    .updateDeliveryStatus(
+                                      orderId: order.id,
+                                      context: context,
+                                    )
+                                    .whenComplete(() {
+                                      ref
+                                          .read(orderProvider.notifier)
+                                          .updateOrderStatus(
+                                            order.id,
+                                            delivered: true,
+                                          );
+                                    });
                               },
                               child: Text(
                                 'Mark as Delivered ?',
@@ -265,10 +281,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             ),
                             TextButton(
                               onPressed: () async {
-                                await orderController.updateProccessStatus(
-                                  orderId: order.id,
-                                  context: context,
-                                );
+                                await orderController
+                                    .updateProccessStatus(
+                                      orderId: order.id,
+                                      context: context,
+                                    )
+                                    .whenComplete(() {
+                                      ref
+                                          .read(orderProvider.notifier)
+                                          .updateOrderStatus(
+                                            order.id,
+                                            processing: false,
+                                          );
+                                    });
                               },
                               child: Text(
                                 'Cancel',

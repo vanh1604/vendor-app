@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vendor_app/global_variables.dart';
 import 'package:vendor_app/models/order.dart';
 import 'package:vendor_app/services/manage_http_response.dart';
@@ -8,12 +9,14 @@ import 'package:vendor_app/services/manage_http_response.dart';
 class OrderController {
   Future<List<Order>> loadOrders({required String vendorId}) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth-token');
       final url = "$uri/api/orders/vendors/$vendorId";
-
       http.Response res = await http.get(
         Uri.parse(url),
         headers: <String, String>{
           "Content-Type": "application/json; charset=UTF-8",
+          "Authorization": "Bearer $token",
         },
       );
 
