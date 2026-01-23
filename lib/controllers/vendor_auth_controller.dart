@@ -17,7 +17,11 @@ class VendorAuthController {
     required String fullName,
     required String email,
     required String password,
+    required String storeName,
+    required String storeImage,
+    required String storeDescription,
     required context,
+    VoidCallback? onSuccess,
   }) async {
     try {
       Vendor vendor = Vendor(
@@ -30,6 +34,9 @@ class VendorAuthController {
         fullName: fullName,
         email: email,
         password: password,
+        storeName: storeName,
+        storeImage: storeImage,
+        storeDescription: storeDescription,
       );
       final response = await http.post(
         Uri.parse('$uri/api/vendor/signup'),
@@ -43,6 +50,9 @@ class VendorAuthController {
         context: context,
         onSuccess: () {
           showSnackBar(context, 'Vendor signed up successfully');
+          if (onSuccess != null) {
+            onSuccess();
+          }
         },
       );
     } catch (e) {

@@ -10,6 +10,9 @@ class Vendor {
   final String password;
   final String role;
   final String token;
+  final String storeName;
+  final String storeImage;
+  final String storeDescription;
 
   Vendor({
     required this.id,
@@ -21,6 +24,9 @@ class Vendor {
     required this.password,
     required this.role,
     required this.token,
+    required this.storeName,
+    required this.storeImage,
+    required this.storeDescription,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +40,9 @@ class Vendor {
       'password': password,
       'role': role,
       'token': token,
+      'storeName': storeName,
+      'storeImage': storeImage,
+      'storeDescription': storeDescription,
     };
   }
 
@@ -50,6 +59,9 @@ class Vendor {
       password: map['password'] ?? '',
       role: map['role'] ?? '',
       token: map['token'] ?? '',
+      storeName: map['storeName'] ?? '',
+      storeImage: map['storeImage'] ?? '',
+      storeDescription: map['storeDescription'] ?? '',
     );
   }
 
@@ -58,6 +70,6 @@ class Vendor {
 
   @override
   String toString() {
-    return 'Vendor(id: $id, fullName: $fullName, email: $email, state: $state, city: $city, locality: $locality, role: $role)';
+    return 'Vendor(id: $id, fullName: $fullName, email: $email, state: $state, city: $city, locality: $locality, role: $role, storeName: $storeName)';
   }
 }
