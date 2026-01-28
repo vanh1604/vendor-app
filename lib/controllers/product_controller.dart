@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:cloudinary_public/cloudinary_public.dart';
@@ -65,6 +66,105 @@ class ProductController {
       }
     } else {
       showSnackBar(context, "Please select at least one image");
+    }
+  }
+
+  Future<List<Product>> getProductByVendorId({required String vendorId}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth-token');
+      final url = "$uri/api/products/vendor/$vendorId";
+      http.Response res = await http.get(
+        Uri.parse(url),
+        headers: <String, String>{
+          "Content-Type": "application/json; charset=UTF-8",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(res.body);
+
+        final List<dynamic> data = responseData['products'];
+
+        List<Product> products = data
+            .map((product) => Product.fromMap(product))
+            .toList();
+        return products;
+      } else {
+        throw Exception(
+          "Failed to load products - Status: ${res.statusCode}, Body: ${res.body}",
+        );
+      }
+    } catch (e) {
+      print("ERROR in getProductByVendorId: $e");
+      throw Exception('An error occurred while loading products: $e');
+    }
+  }
+
+  Future<void> updatedProduct({
+    required String productId,
+    required String name,
+    required String description,
+    required double price,
+    required int quantity,
+    required String category,
+    required String subCategory,
+    required List<File> pickedImages,
+    required List<String> existingImages,
+    required String vendorId,
+    required String fullName,
+    required BuildContext context,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth-token');
+
+    List<String> images = [];
+
+    if (pickedImages.isNotEmpty) {
+      final cloudinary = CloudinaryPublic("duzytwoln", "dmwyjltu");
+      for (var i = 0; i < pickedImages.length; i++) {
+        CloudinaryResponse response = await cloudinary.uploadFile(
+          CloudinaryFile.fromFile(pickedImages[i].path, folder: name),
+        );
+        images.add(response.secureUrl);
+      }
+      print("New images uploaded: $images");
+    } else {
+      images = existingImages;
+      print("Using existing images: $images");
+    }
+
+    if (category.isNotEmpty && subCategory.isNotEmpty) {
+      final Product product = Product(
+        id: productId,
+        name: name,
+        description: description,
+        price: price,
+        quantity: quantity,
+        category: category,
+        subCategory: subCategory,
+        images: images,
+        vendorId: vendorId,
+        fullName: fullName,
+      );
+      http.Response res = await http.put(
+        Uri.parse("$uri/api/products/update/$productId"),
+        body: product.toJson(),
+        headers: <String, String>{
+          "Content-Type": "application/json; charset=UTF-8",
+          "Authorization": "Bearer $token",
+        },
+      );
+      manageHttpResponse(
+        res: res,
+        context: context,
+        onSuccess: () {
+          showSnackBar(context, "Product updated successfully");
+        },
+      );
+    } else {
+      showSnackBar(context, "Please select category and subcategory");
     }
   }
 }

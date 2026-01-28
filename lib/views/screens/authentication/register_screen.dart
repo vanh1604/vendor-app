@@ -23,7 +23,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _storeNameController = TextEditingController();
-  final TextEditingController _storeDescriptionController = TextEditingController();
+  final TextEditingController _storeDescriptionController =
+      TextEditingController();
 
   late String email;
   late String fullName;
